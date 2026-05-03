@@ -1,17 +1,19 @@
-# Multimodal Search Engine
+# CLIP cosine search
 
-A semantic search system that enables bidirectional search between images and text using CLIP embeddings. Users can search for images using natural language descriptions or find similar text captions by uploading images.
+Bidirectional image-text search on Flickr8K using CLIP embeddings and cosine similarity in numpy. No vector DB, no LangChain.
+
+> I built this to understand vector retrieval from first principles rather than wrapping a library. The similarity search is a normalized dot product in numpy. The notebooks show the math directly instead of hiding it behind a framework.
 
 ## Overview
 
-This project implements a multimodal search engine using OpenAI's CLIP model to create vector embeddings for both images and text. The system uses cosine similarity to find semantically related content across modalities.
+OpenAI's CLIP model produces 512-dimensional embeddings for both images and text in a shared space. This project uses those embeddings to search across modalities: type a sentence to find matching images, or upload an image to find matching captions.
 
 ### Key Components
 
-- **Data Processing**: Loads and validates the Flickr8K dataset, generating normalized embeddings for all images and captions
-- **Search Engine**: Implements efficient similarity search using dot product operations on normalized embeddings  
-- **Web Interface**: Provides an interactive Gradio-based interface for both text-to-image and image-to-text search
-- **Storage**: Uses compressed HDF5 format for efficient storage and retrieval of embeddings
+- **Data Processing**: Loads the Flickr8K dataset and generates normalized CLIP embeddings for every image and caption
+- **Search Engine**: Computes similarity as a dot product over normalized embeddings
+- **Web Interface**: Gradio app with tabs for text-to-image and image-to-text search
+- **Storage**: HDF5 with gzip compression for the embedding store
 
 ## Features
 
@@ -21,8 +23,8 @@ Find images that match natural language descriptions. The system searches throug
 ### Image to Text Search  
 Upload an image to find semantically similar text descriptions from the dataset.
 
-### Interactive Web Interface
-Browser-based interface with separate tabs for each search mode, configurable result counts, and detailed similarity scores.
+### Web Interface
+Gradio interface with a tab for each search direction. Result count is adjustable, and similarity scores are shown next to each result.
 
 ## Technical Specifications
 
@@ -38,7 +40,7 @@ Browser-based interface with separate tabs for each search mode, configurable re
 ```bash
 # Clone repository
 git clone <repository-url>
-cd search_engine_demo
+cd clip-cosine-search
 
 # Install dependencies
 pip install -r requirements.txt
@@ -59,28 +61,26 @@ Downloads Flickr8K dataset, generates CLIP embeddings, and stores them in HDF5 f
 ```bash
 jupyter notebook notebooks/part02_search_functionality.ipynb
 ```
-Demonstrates the search algorithms and compares different result filtering approaches.
+Walks through the search code and compares result filtering approaches.
 
 ### 3. Launch Web Interface
 ```bash
 jupyter notebook notebooks/part03_multimodal_interface.ipynb
 ```
-Launches the interactive web interface for searching images and text.
+Launches the Gradio web interface.
 
 ## Technical Details
 
-The search algorithm uses L2-normalized CLIP embeddings, allowing cosine similarity to be computed efficiently as a dot product:
+CLIP embeddings are L2-normalized once at index time, which reduces cosine similarity to a single dot product per query:
 
 ```
 similarity(query, target) = normalized_query · normalized_target
 ```
 
-This approach scales well to large datasets while maintaining semantic accuracy.
-
 ## Project Structure
 
 ```
-search_engine_demo/
+clip-cosine-search/
 ├── notebooks/
 │   ├── part01_data_preparation.ipynb      # Dataset loading and embedding generation
 │   ├── part02_search_functionality.ipynb  # Search algorithm implementation and testing
@@ -112,14 +112,4 @@ Core libraries:
 - `numpy` - Array operations
 - `Pillow` - Image processing
 
-See `requirements.txt` for complete dependency list with versions.
-
-## Implementation Notes
-
-This project demonstrates practical implementation of:
-- Cross-modal embedding alignment using CLIP
-- Efficient similarity search with normalized vectors
-- Interactive multimodal interfaces
-- Compressed storage for large embedding datasets
-
-The implementation includes error handling, input validation, and modular design for easy extension and modification.
+See `requirements.txt` for the full dependency list with versions.
