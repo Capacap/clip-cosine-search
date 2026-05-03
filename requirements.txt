@@ -1,8 +1,8 @@
-# Core dependencies for Multimodal Search Engine
+# Core dependencies for CLIP cosine search
 
 # Machine Learning & Data Science Stack
 torch>=2.0.0
-transformers>=4.20.0
+transformers>=5.0.0
 
 # Data Storage & Processing  
 h5py>=3.7.0
